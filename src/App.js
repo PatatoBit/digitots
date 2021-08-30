@@ -1,10 +1,11 @@
+import React, { useState } from 'react';
 import './App.css';
 import './index.css';
 import Transaction from './Transaction'
 
 import { initializeApp } from "firebase/app";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, onSnapshot } from 'firebase/firestore';
 import { useAuthState } from 'react-firebase-hooks/auth';
 
 
@@ -19,18 +20,21 @@ const firebaseConfig = {
 };
 
 const firebaseApp = initializeApp(firebaseConfig);
+console.log(firebaseApp);
 const auth = getAuth();
 const db = getFirestore();
 const provider = new GoogleAuthProvider();
 
-
-let userId = ''
+let uid = ''
 
 function App() {
+
   // check for user
   const [user] = useAuthState(auth);
   if (user) {
-    userId = user.uid;
+    uid = user.uid;
+    console.log(uid);
+    console.log('User is logged in');
   } else {
     console.log('User not logged in')
   }
@@ -52,20 +56,41 @@ function App() {
 }
 
 function UserView() {
-  
+  let [formValue, setFormValue] = useState('');
+  let [countValue, setCountValue]  = useState(0);
+  const userRef = doc(db, 'users', uid);
+
+  const saveData = async(e) => {
+    e.preventDefault();
+      await setDoc(userRef, {
+        num: parseInt(formValue)
+      }, {merge: true})
+    setFormValue('');
+
+  }
+
+
+  // read data
+  onSnapshot(userRef, (doc) => {
+    if (doc.exists()) {
+      setCountValue(countValue = doc.data().num)
+    } else {
+      setCountValue(countValue = 0)
+    }
+  })
+
+
   return(
     <>
-      <h1>Counter</h1>
+      <h1>{countValue}</h1>
       
-      <section>
-        <form>
-          <input type="number" placeholder='Set your Balance'/>
-          <button>Submit</button>
+      <form onSubmit={saveData}>
+        <input type="number" value={formValue} onChange={(e) => setFormValue(e.target.value)} placeholder='Set your Balance' />
+        <button type='submit' disabled={!formValue}>Submit</button>
+      </form>
 
-        </form>
-      </section>
       <br/>
-      <Transaction />
+      <Transaction db={db} uid={uid} userRef={userRef} />
     </>
   )
 }
