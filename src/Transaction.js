@@ -1,23 +1,36 @@
-import React, { useState} from 'react';
+import React, { useState } from 'react';
 
-import { setDoc, onSnapshot } from 'firebase/firestore';
+import { collection, doc, query, where, getDocs, updateDoc, onSnapshot } from 'firebase/firestore';
 
-export default function Transaction({db, uid, userRef}) {
+export default function Transaction({db, userRef, firebase}) {
+    const userCol = collection(db, "users")
+    
     let [amount, setAmount] = useState('');
     let [target, setTarget] = useState('');
     let [code, setCode] = useState('');
 
     const sendNum = async(e) => {
         e.preventDefault();
-        console.log(amount);
-        console.log(target);
+        
+        const targetQuery = query(userCol, where("keycode", "==", parseInt(target)));
+        const targetSnapshot = await getDocs(targetQuery)
+        
+        targetSnapshot.forEach((document) => {
+            console.log(document.data().num)
+            console.log(document.id)
+            const targetRef = doc(db, 'users', document.id)
+
+            console.log(targetRef)
+        })
+        
+
         setAmount('');
         setTarget('');
     }
     
     const generateCode = async(e) => {
         e.preventDefault();
-        await setDoc(userRef, {
+        await updateDoc(userRef, {
             keycode: Math.round(Math.random() * 100000)
         }, {merge: true})
     }
@@ -33,10 +46,10 @@ export default function Transaction({db, uid, userRef}) {
     return (
         <>
             <form onSubmit={sendNum}>
-                <input value={amount} onChange={(e) => setAmount(e.target.value)} type="number" placeholder='Amount'/>
-                <input value={target} onChange={(e) => setTarget(e.target.value)} type="number" placeholder='Keycode'/>
+                <input style={{ width: 200 }}value={amount} onChange={(e) => setAmount(e.target.value)} type="number" placeholder='Amount'/>
+                <input style={{ width: 200 }} value={target} onChange={(e) => setTarget(e.target.value)} type="number" placeholder='Keycode'/>
                 <br />
-                <button type='submit'>Send</button>
+                <button type='submit' disabled={!amount + !target}>Send</button>
             </form>
 
             <section>

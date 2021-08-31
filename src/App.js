@@ -66,7 +66,6 @@ function UserView() {
         num: parseInt(formValue)
       }, {merge: true})
     setFormValue('');
-
   }
 
 
@@ -85,12 +84,14 @@ function UserView() {
       <h1>{countValue}</h1>
       
       <form onSubmit={saveData}>
-        <input type="number" value={formValue} onChange={(e) => setFormValue(e.target.value)} placeholder='Set your Balance' />
+        <input style={{ width: 600 }} type="number" value={formValue} onChange={(e) => setFormValue(e.target.value)} placeholder='Set your Balance' />
+        <br />
         <button type='submit' disabled={!formValue}>Submit</button>
+        
       </form>
 
       <br/>
-      <Transaction db={db} uid={uid} userRef={userRef} />
+      <Transaction db={db} uid={uid} userRef={userRef} firebase={firebaseApp}/>
     </>
   )
 }
