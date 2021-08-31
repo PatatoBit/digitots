@@ -60,6 +60,7 @@ function UserView() {
   let [countValue, setCountValue]  = useState(0);
   const userRef = doc(db, 'users', uid);
 
+  // set your own num for now
   const saveData = async(e) => {
     e.preventDefault();
       await setDoc(userRef, {
@@ -69,7 +70,7 @@ function UserView() {
   }
 
 
-  // read data
+  // read data realtime
   onSnapshot(userRef, (doc) => {
     if (doc.exists()) {
       setCountValue(countValue = doc.data().num)
@@ -96,6 +97,7 @@ function UserView() {
   )
 }
 
+// sign in with google
 function SignIn() {
   const signInWithGoogle = () => {
     signInWithPopup(auth, provider).then((result) => {
@@ -110,6 +112,7 @@ function SignIn() {
   )
 }
 
+// signout
 function SignOut() {
   return auth.currentUser && (
     <button className="red sign-out btn" onClick={() => auth.signOut()}>Sign Out</button>

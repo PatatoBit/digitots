@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
 
-import { collection, doc, query, where, getDocs, updateDoc, onSnapshot } from 'firebase/firestore';
+import { collection, doc, query, where, getDocs, updateDoc, onSnapshot, setDoc, increment } from 'firebase/firestore';
 
 export default function Transaction({db, userRef, firebase}) {
     const userCol = collection(db, "users")
     
+    // getting input value
     let [amount, setAmount] = useState('');
     let [target, setTarget] = useState('');
     let [code, setCode] = useState('');
-
+    
+    // send num to target
     const sendNum = async(e) => {
         e.preventDefault();
+        
         
         const targetQuery = query(userCol, where("keycode", "==", parseInt(target)));
         const targetSnapshot = await getDocs(targetQuery)
@@ -19,8 +22,11 @@ export default function Transaction({db, userRef, firebase}) {
             console.log(document.data().num)
             console.log(document.id)
             const targetRef = doc(db, 'users', document.id)
-
-            console.log(targetRef)
+            
+            // increment target num
+            setDoc(targetRef, {
+                num: increment(amount)
+            }, {merge: true})
         })
         
 
@@ -28,6 +34,7 @@ export default function Transaction({db, userRef, firebase}) {
         setTarget('');
     }
     
+    // generate random user keycode
     const generateCode = async(e) => {
         e.preventDefault();
         await updateDoc(userRef, {
@@ -35,6 +42,8 @@ export default function Transaction({db, userRef, firebase}) {
         }, {merge: true})
     }
     
+
+    //read data realtime
     onSnapshot(userRef, (doc) => {
         if (doc.exists()){
             setCode(code = doc.data().keycode)
