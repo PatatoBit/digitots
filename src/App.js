@@ -20,7 +20,6 @@ const firebaseConfig = {
 };
 
 const firebaseApp = initializeApp(firebaseConfig);
-console.log(firebaseApp);
 const auth = getAuth();
 const db = getFirestore();
 const provider = new GoogleAuthProvider();
@@ -87,7 +86,7 @@ function UserView() {
       <form onSubmit={saveData}>
         <input style={{ width: 600 }} type="number" value={formValue} onChange={(e) => setFormValue(e.target.value)} placeholder='Set your Balance' />
         <br />
-        <button type='submit' disabled={!formValue}>Submit</button>
+        <button className='btn' type='submit'>Submit</button>
         
       </form>
 

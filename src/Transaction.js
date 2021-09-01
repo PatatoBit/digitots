@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import { collection, doc, query, where, getDocs, updateDoc, onSnapshot, setDoc, increment } from 'firebase/firestore';
 
-export default function Transaction({db, userRef, firebase}) {
+export default function Transaction({db, userRef}) {
     const userCol = collection(db, "users")
     
     // getting input value
@@ -13,21 +13,29 @@ export default function Transaction({db, userRef, firebase}) {
     // send num to target
     const sendNum = async(e) => {
         e.preventDefault();
-        
-        
         const targetQuery = query(userCol, where("keycode", "==", parseInt(target)));
         const targetSnapshot = await getDocs(targetQuery)
+
         
-        targetSnapshot.forEach((document) => {
-            console.log(document.data().num)
-            console.log(document.id)
-            const targetRef = doc(db, 'users', document.id)
-            
-            // increment target num
-            setDoc(targetRef, {
-                num: increment(amount)
+            console.log('Presend')
+            await setDoc(userRef,  {
+               num: increment(-amount)  
             }, {merge: true})
-        })
+
+
+            targetSnapshot.forEach((document) => {
+                console.log(document.data().num)
+                const targetRef = doc(db, 'users', document.id)
+                
+                // increment target num
+                setDoc(targetRef, {
+                    num: increment(amount)
+                }, {merge: true})
+                console.log(document.data().num)
+
+            })
+            console.log('Sent Succesfully')
+        
         
 
         setAmount('');
@@ -48,7 +56,7 @@ export default function Transaction({db, userRef, firebase}) {
         if (doc.exists()){
             setCode(code = doc.data().keycode)
         } else {
-
+            setCode(code = 'N/A')
         }
     })
 
@@ -58,12 +66,12 @@ export default function Transaction({db, userRef, firebase}) {
                 <input style={{ width: 200 }}value={amount} onChange={(e) => setAmount(e.target.value)} type="number" placeholder='Amount'/>
                 <input style={{ width: 200 }} value={target} onChange={(e) => setTarget(e.target.value)} type="number" placeholder='Keycode'/>
                 <br />
-                <button type='submit' disabled={!amount + !target}>Send</button>
+                <button className='btn' type='submit'>Send</button>
             </form>
 
             <section>
                 <h2>{code}</h2>
-                <button onClick={generateCode} type='submit'>Generate Code</button>
+                <button className='btn' onClick={generateCode} type='submit'>Generate Code</button>
             </section>
         </>
     )
