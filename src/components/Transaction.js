@@ -48,6 +48,7 @@ export default function Transaction({db, userRef}) {
         await updateDoc(userRef, {
             keycode: Math.round(Math.random() * 100000)
         }, {merge: true})
+    
     }
     
 

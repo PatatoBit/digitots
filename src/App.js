@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
 import './App.css';
 import './index.css';
-import Transaction from './Transaction'
+
+import Transaction from './components/Transaction';
+import Nav from './components/Nav';
+import Shop from './components/Shop';
+import About from './components/About';
+import Admin from './components/Admin';
+import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
 
 import { initializeApp } from "firebase/app";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
@@ -29,6 +35,32 @@ let uid = ''
 function App() {
 
   // check for user
+  
+  return (
+    <div className="App">
+      
+      <header>
+        <Router>
+          <Nav />
+          
+          <Switch>
+            
+            <Route path='/' exact component={MainView} />
+            <Route path="/about" component={About}/>
+            <Route path='/shop' component={Shop}/>
+            <Route path='/admin' component={Admin}/>
+
+          </Switch>
+           
+        </Router>
+      </header>
+
+      
+    </div>
+  );
+}
+
+function MainView() {
   const [user] = useAuthState(auth);
   if (user) {
     uid = user.uid;
@@ -39,19 +71,15 @@ function App() {
   }
 
   return (
-    <div className="App">
-      
-      <header>
-        <h1 className='block text-6xl'>Digitots (beta)</h1>
-        <SignOut />
-      </header>
+    <>
+      <h1 className='block text-6xl'>Digitots (beta)</h1>
+      <SignOut />
 
       <section>
-        {user ? <UserView />: <SignIn />}
+          {user ? <UserView />: <SignIn />}
       </section>
-
-    </div>
-  );
+    </>
+  )
 }
 
 function UserView() {
@@ -81,6 +109,7 @@ function UserView() {
 
   return(
     <>
+
       <h1>{countValue}</h1>
       
       <form onSubmit={saveData}>
