@@ -2,23 +2,23 @@ import React, { useState } from 'react';
 
 import { collection, doc, query, where, getDocs, updateDoc, onSnapshot, setDoc, increment } from 'firebase/firestore';
 
-export default function Transaction({db, userRef}) {
+export default function Transaction({db, uid, userRef}) {
     const userCol = collection(db, "users")
     
     // getting input value
     let [amount, setAmount] = useState('');
     let [target, setTarget] = useState('');
     let [code, setCode] = useState('');
-    
     // send num to target
     const sendNum = async(e) => {
         e.preventDefault();
+        const userRef = doc((db, 'users', uid))
         const targetQuery = query(userCol, where("keycode", "==", parseInt(target)));
         const targetSnapshot = await getDocs(targetQuery)
 
         
             console.log('Presend')
-            await setDoc(userRef,  {
+            await setDoc(userRef, {
                num: increment(-amount)  
             }, {merge: true})
 
@@ -45,7 +45,7 @@ export default function Transaction({db, userRef}) {
     // generate random user keycode
     const generateCode = async(e) => {
         e.preventDefault();
-        await updateDoc(userRef, {
+        await updateDoc(userRef,  {
             keycode: Math.round(Math.random() * 100000)
         }, {merge: true})
     
@@ -53,7 +53,7 @@ export default function Transaction({db, userRef}) {
     
 
     //read data realtime
-    onSnapshot(userRef, (doc) => {
+    onSnapshot(userRef,  (doc) => {
         if (doc.exists()){
             setCode(code = doc.data().keycode)
         } else {

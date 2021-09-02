@@ -33,9 +33,6 @@ const provider = new GoogleAuthProvider();
 let uid = ''
 
 function App() {
-
-  // check for user
-  
   return (
     <div className="App">
       
@@ -49,6 +46,14 @@ function App() {
             <Route path="/about" component={About}/>
             <Route path='/shop' component={Shop}/>
             <Route path='/admin' component={Admin}/>
+            
+            <Route
+              path='/portal'
+              render={(props) => (
+                <Transaction {...props}  db={db} uid={uid}/>
+              )}
+            />
+            
 
           </Switch>
            
@@ -62,6 +67,7 @@ function App() {
 
 function MainView() {
   const [user] = useAuthState(auth);
+
   if (user) {
     uid = user.uid;
     console.log(uid);
@@ -85,9 +91,10 @@ function MainView() {
 function UserView() {
   let [formValue, setFormValue] = useState('');
   let [countValue, setCountValue]  = useState(0);
-  const userRef = doc(db, 'users', uid);
-
+  const userRef = doc(db, 'users', uid)
+  
   // set your own num for now
+
   const saveData = async(e) => {
     e.preventDefault();
       await setDoc(userRef, {
@@ -98,7 +105,7 @@ function UserView() {
 
 
   // read data realtime
-  onSnapshot(userRef, (doc) => {
+  onSnapshot(userRef,(doc) => {
     if (doc.exists()) {
       setCountValue(countValue = doc.data().num)
     } else {
@@ -109,7 +116,6 @@ function UserView() {
 
   return(
     <>
-
       <h1>{countValue}</h1>
       
       <form onSubmit={saveData}>
@@ -120,7 +126,6 @@ function UserView() {
       </form>
 
       <br/>
-      <Transaction db={db} uid={uid} userRef={userRef} firebase={firebaseApp}/>
     </>
   )
 }
