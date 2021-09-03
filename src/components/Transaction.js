@@ -1,58 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 
-import { collection, doc, query, where, getDocs, updateDoc, onSnapshot, setDoc, increment } from 'firebase/firestore';
+import { onSnapshot, doc } from 'firebase/firestore'
+import { db } from '../firebase.js'
 
-export default function Transaction({db, uid, userRef}) {
-    const userCol = collection(db, "users")
+function Transaction({uid}) {
+    console.log(uid)
+
     
-    // getting input value
-    let [amount, setAmount] = useState('');
-    let [target, setTarget] = useState('');
-    let [code, setCode] = useState('');
-    // send num to target
+    const userRef = doc(db, 'users', uid)
+    console.log('Work')
+
+    let [amount, setAmount] = useState('')
+    let [target, setTarget] = useState('')
+    let [code, setCode] = useState('')
+
+    
     const sendNum = async(e) => {
         e.preventDefault();
-        const userRef = doc((db, 'users', uid))
-        const targetQuery = query(userCol, where("keycode", "==", parseInt(target)));
-        const targetSnapshot = await getDocs(targetQuery)
-
-        
-            console.log('Presend')
-            await setDoc(userRef, {
-               num: increment(-amount)  
-            }, {merge: true})
-
-
-            targetSnapshot.forEach((document) => {
-                console.log(document.data().num)
-                const targetRef = doc(db, 'users', document.id)
-                
-                // increment target num
-                setDoc(targetRef, {
-                    num: increment(amount)
-                }, {merge: true})
-                console.log(document.data().num)
-
-            })
-            console.log('Sent Succesfully')
-        
-        
-
-        setAmount('');
-        setTarget('');
+        console.log('Send Num')
     }
-    
-    // generate random user keycode
+
     const generateCode = async(e) => {
         e.preventDefault();
-        await updateDoc(userRef,  {
-            keycode: Math.round(Math.random() * 100000)
-        }, {merge: true})
-    
+        console.log('Generate Code')
     }
-    
 
-    //read data realtime
+
     onSnapshot(userRef,  (doc) => {
         if (doc.exists()){
             setCode(code = doc.data().keycode)
@@ -69,7 +42,7 @@ export default function Transaction({db, uid, userRef}) {
                 <br />
                 <button className='btn' type='submit'>Send</button>
             </form>
-
+ 
             <section>
                 <h2>{code}</h2>
                 <button className='btn' onClick={generateCode} type='submit'>Generate Code</button>
@@ -77,3 +50,5 @@ export default function Transaction({db, uid, userRef}) {
         </>
     )
 }
+
+export default Transaction

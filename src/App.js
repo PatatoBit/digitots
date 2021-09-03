@@ -9,30 +9,17 @@ import About from './components/About';
 import Admin from './components/Admin';
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
 
-import { initializeApp } from "firebase/app";
-import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-import { getFirestore, doc, setDoc, onSnapshot } from 'firebase/firestore';
+import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { doc, setDoc, onSnapshot } from 'firebase/firestore';
 import { useAuthState } from 'react-firebase-hooks/auth';
 
-
-const firebaseConfig = {
-  apiKey: "AIzaSyAKLyeY2FbjFDD57Kp9sGDi8uHg3neXxjI",
-  authDomain: "digitots-dev.firebaseapp.com",
-  projectId: "digitots-dev",
-  storageBucket: "digitots-dev.appspot.com",
-  messagingSenderId: "150130182744",
-  appId: "1:150130182744:web:216e77264273772c94182d",
-  measurementId: "G-RJT8Q1LSXZ"
-};
-
-const firebaseApp = initializeApp(firebaseConfig);
-const auth = getAuth();
-const db = getFirestore();
+import {auth, db} from "./firebase.js";
 const provider = new GoogleAuthProvider();
 
 let uid = ''
 
 function App() {
+  
   return (
     <div className="App">
       
@@ -50,7 +37,7 @@ function App() {
             <Route
               path='/portal'
               render={(props) => (
-                <Transaction {...props}  db={db} uid={uid}/>
+                <Transaction {...props} uid={uid} />
               )}
             />
             
@@ -75,7 +62,6 @@ function MainView() {
   } else {
     console.log('User not logged in')
   }
-
   return (
     <>
       <h1 className='block text-6xl'>Digitots (beta)</h1>
