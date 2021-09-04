@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import { onSnapshot, doc } from 'firebase/firestore'
+import { onSnapshot, doc, collection, setDoc, query, where, getDocs, increment, updateDoc } from 'firebase/firestore'
 import { db } from '../firebase.js'
 
 function Transaction({uid, isUser}) {
@@ -8,21 +8,49 @@ function Transaction({uid, isUser}) {
     let [target, setTarget] = useState('')
     let [code, setCode] = useState('')
     
-    if (isUser){
+    
         console.log(uid)
         const userRef = doc(db, 'users', uid)
         console.log('Work')
     
         
-        
         const sendNum = async(e) => {
             e.preventDefault();
-            console.log('Send Num')
-        }
+            const userRef = doc(db, 'users', uid)
+            const userCol = collection(db, 'users')
+            const targetQuery = query(userCol, where("keycode", "==", parseInt(target)));
+            const targetSnapshot = await getDocs(targetQuery)
     
+            
+                console.log('Presend')
+                await setDoc(userRef, {
+                   num: increment(-amount)  
+                }, {merge: true})
+    
+                targetSnapshot.forEach((document) => {
+                    console.log(document.data().num)
+                    const targetRef = doc(db, 'users', document.id)
+                    
+                    // increment target num
+                    setDoc(targetRef, {
+                        num: increment(amount)
+                    }, {merge: true})
+                    console.log(document.data().num)
+    
+                })
+                console.log('Sent Succesfully')
+    
+            setAmount('');
+            setTarget('');
+        }
+        
+        // generate random user keycode
         const generateCode = async(e) => {
             e.preventDefault();
-            console.log('Generate Code')
+            await setDoc(userRef,  {
+                keycode: Math.round(Math.random() * 100000)
+            }, {merge: true})
+        
         }
     
     
@@ -34,13 +62,14 @@ function Transaction({uid, isUser}) {
             }
         })
     
+    if(isUser) {
         return (
             <>
                 <br />
                 <br />
                 <br />
                 <br />
-                
+                <br />
                 <form onSubmit={sendNum}>
                     <input style={{ width: 200 }}value={amount} onChange={(e) => setAmount(e.target.value)} type="number" placeholder='Amount'/>
                     <input style={{ width: 200 }} value={target} onChange={(e) => setTarget(e.target.value)} type="number" placeholder='Keycode'/>
@@ -54,6 +83,7 @@ function Transaction({uid, isUser}) {
                 </section>
             </>
         )
+        
     } else {
         return (
             <h2>Please login / signup to continue</h2>
