@@ -18,6 +18,7 @@ const provider = new GoogleAuthProvider();
 
 let uid = '';
 let umail = '';
+let isUser = false;
 
 function App() {
   
@@ -32,13 +33,26 @@ function App() {
             
             <Route path='/' exact component={MainView} />
             <Route path="/about" component={About}/>
-            <Route path='/shop' component={Shop}/>
-            <Route path='/admin' component={Admin}/>
+            
+            
+            <Route
+              path='/shop'
+              render={(props) => (
+                <Shop {...props} isUser={isUser}/>
+              )}
+            />
+
+            <Route
+              path='/admin'
+              render={(props) => (
+                <Admin {...props} isUser={isUser}/>
+              )}
+            />
             
             <Route
               path='/portal'
               render={(props) => (
-                <Transaction {...props} uid={uid} />
+                <Transaction {...props} uid={uid} isUser={isUser}/>
               )}
             />
             
@@ -59,8 +73,10 @@ function MainView() {
   if (user) {
     uid = user.uid;
     umail = user.email;
+    isUser = true;
     console.log('User is logged in');
   } else {
+    isUser = false;
     console.log('User not logged in')
   }
   return (
