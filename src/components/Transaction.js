@@ -36,6 +36,11 @@ function Transaction({uid}) {
 
     return (
         <>
+            <br />
+            <br />
+            <br />
+            <br />
+            
             <form onSubmit={sendNum}>
                 <input style={{ width: 200 }}value={amount} onChange={(e) => setAmount(e.target.value)} type="number" placeholder='Amount'/>
                 <input style={{ width: 200 }} value={target} onChange={(e) => setTarget(e.target.value)} type="number" placeholder='Keycode'/>

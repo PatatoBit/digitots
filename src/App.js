@@ -16,7 +16,8 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import {auth, db} from "./firebase.js";
 const provider = new GoogleAuthProvider();
 
-let uid = ''
+let uid = '';
+let umail = '';
 
 function App() {
   
@@ -57,7 +58,7 @@ function MainView() {
 
   if (user) {
     uid = user.uid;
-    console.log(uid);
+    umail = user.email;
     console.log('User is logged in');
   } else {
     console.log('User not logged in')
@@ -102,7 +103,8 @@ function UserView() {
 
   return(
     <>
-      <h1>{countValue}</h1>
+      <h2>{countValue}</h2>
+      <h6>{umail}</h6>
       
       <form onSubmit={saveData}>
         <input style={{ width: 600 }} type="number" value={formValue} onChange={(e) => setFormValue(e.target.value)} placeholder='Set your Balance' />
