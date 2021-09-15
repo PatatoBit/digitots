@@ -1,17 +1,15 @@
 import React, { useState } from 'react'
 
-import { onSnapshot, doc, collection, setDoc, query, where, getDocs, increment, updateDoc } from 'firebase/firestore'
+import { onSnapshot, doc, collection, setDoc, query, where, getDocs, increment } from 'firebase/firestore'
 import { db } from '../firebase.js'
 
-function Transaction({uid, isUser}) {
+function Transaction({ uid, isUser }) {
     let [amount, setAmount] = useState('')
     let [target, setTarget] = useState('')
     let [code, setCode] = useState('')
     
-    
         console.log(uid)
         const userRef = doc(db, 'users', uid)
-        console.log('Work')
     
         
         const sendNum = async(e) => {
@@ -71,7 +69,7 @@ function Transaction({uid, isUser}) {
                 <br />
                 <br />
                 <form onSubmit={sendNum}>
-                    <input style={{ width: 200 }}value={amount} onChange={(e) => setAmount(e.target.value)} type="number" placeholder='Amount'/>
+                    <input style={{ width: 200 }} value={amount} onChange={(e) => setAmount(e.target.value)} type="number" min='0' placeholder='Amount'/>
                     <input style={{ width: 200 }} value={target} onChange={(e) => setTarget(e.target.value)} type="number" placeholder='Keycode'/>
                     <br />
                     <button className='btn' type='submit'>Send</button>

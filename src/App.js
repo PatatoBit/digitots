@@ -123,7 +123,7 @@ function UserView() {
       <h6>{umail}</h6>
       
       <form onSubmit={saveData}>
-        <input style={{ width: 600 }} type="number" value={formValue} onChange={(e) => setFormValue(e.target.value)} placeholder='Set your Balance' />
+        <input style={{ width: 600 }} type="number" min='0' value={formValue} onChange={(e) => setFormValue(e.target.value)} placeholder='Set your Balance' />
         <br />
         <button className='btn' type='submit'>Submit</button>
         
